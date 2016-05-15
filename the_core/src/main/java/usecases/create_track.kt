@@ -7,11 +7,11 @@ fun create_track(gui: Gui, trackRepository: TrackRepository, track: Track) {
     }
 
     if (trackRepository.findByTitle(track.title) != null) {
+        gui.validationFailed("Tracks must be unique")
         return
     }
 
-    val trackId = trackRepository.save(track)
-    gui.trackCreated(trackId)
+    gui.trackCreated(trackRepository.save(track))
 }
 
 data class Track(val title: String) {

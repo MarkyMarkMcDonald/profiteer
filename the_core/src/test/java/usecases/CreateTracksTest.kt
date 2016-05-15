@@ -34,6 +34,7 @@ class ImportTracksTest {
         val firstId = guiSpy.createdTrackId
         create_track(guiSpy, fakeTrackRepository, Track(title="Of The Wrist"))
 
+        assertThat(guiSpy.validationFailedCalls).asList().contains("Tracks must be unique")
         assertThat(guiSpy.createdTrackId).isEqualTo(firstId)
     }
 }
