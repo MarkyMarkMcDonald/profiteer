@@ -17,22 +17,22 @@ class ImportTracksTest {
     }
 
     @Test
-    fun import_track_requires_titles() {
-        import_track(guiSpy, fakeTrackRepository, Track(title=""))
+    fun create_track_requires_titles() {
+        create_track(guiSpy, fakeTrackRepository, Track(title=""))
         assertThat(guiSpy.validationFailedCalls).asList().contains("Tracks must have a title")
     }
 
     @Test
     fun sends_an_id_for_the_track_back_to_the_gui() {
-        import_track(guiSpy, fakeTrackRepository, Track(title="Of The Wrist"))
+        create_track(guiSpy, fakeTrackRepository, Track(title="Of The Wrist"))
         assertThat(guiSpy.createdTrackId).isNotNull()
     }
 
     @Test
-    fun preexisting_tracks_should_not_be_imported_again() {
-        import_track(guiSpy, fakeTrackRepository, Track(title="Of The Wrist"))
+    fun tracks_are_unique_by_name() {
+        create_track(guiSpy, fakeTrackRepository, Track(title="Of The Wrist"))
         val firstId = guiSpy.createdTrackId
-        import_track(guiSpy, fakeTrackRepository, Track(title="Of The Wrist"))
+        create_track(guiSpy, fakeTrackRepository, Track(title="Of The Wrist"))
 
         assertThat(guiSpy.createdTrackId).isEqualTo(firstId)
     }

@@ -1,6 +1,6 @@
 package usecases
 
-fun import_track(gui: Gui, trackRepository: TrackRepository, track: Track) {
+fun create_track(gui: Gui, trackRepository: TrackRepository, track: Track) {
     if (track.title.isEmpty()) {
         gui.validationFailed("Tracks must have a title")
         return
