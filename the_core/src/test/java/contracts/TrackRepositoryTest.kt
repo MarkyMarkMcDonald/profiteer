@@ -3,7 +3,6 @@ package contracts
 import org.assertj.core.api.KotlinAssertions
 import org.junit.Before
 import org.junit.Test
-import usecases.FakeTrackRepository
 import usecases.Track
 import usecases.TrackRepository
 
