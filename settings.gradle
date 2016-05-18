@@ -19,3 +19,4 @@ include 'services:webservice'
 rootProject.name = 'profiteer'
 
 include 'the_core'
+include 'plugins/website'
