@@ -28,4 +28,6 @@ interface TrackRepository {
     fun findByTitle(title: String): Track?
 
     fun save(track: Track): Long
+
+    fun all(): Collection<Track>
 }

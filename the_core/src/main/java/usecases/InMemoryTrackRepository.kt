@@ -15,4 +15,8 @@ class InMemoryTrackRepository : TrackRepository {
     override fun findByTitle(title: String): Track? {
         return tracks.find { it.title.equals(title) }
     }
+
+    override fun all(): Collection<Track> {
+        return tracks
+    }
 }

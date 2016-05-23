@@ -1,6 +1,7 @@
 import kotlinx.html.*
 import kotlinx.html.FormMethod.post
 import kotlinx.html.stream.createHTML
+import spark.Response
 import spark.Spark
 import spark.Spark.get
 import spark.Spark.post
@@ -23,6 +24,7 @@ object Router {
             createHTML().html {
                 body {
                     trackForm()
+                    tracksList(trackRepository.all())
                 }
             }
         }
@@ -37,16 +39,24 @@ object Router {
 
         post("/tracks") { request, response ->
             val title = request.queryParams("title")
-            val gui = ResponseSwitch()
-            create_track(gui, trackRepository, Track(title))
-            gui.responseBody
+            create_track(TrackCreatedObserver(response), trackRepository, Track(title))
+            response.body()
         }
     }
+}
 
+private fun BODY.tracksList(tracks: Collection<Track>) {
+    ul {
+        tracks.forEach { track ->
+            li {
+                +track.title
+            }
+        }
+    }
 }
 
 private fun BODY.trackForm() {
-    h1 { +"New Track" }
+    h1 { +"Add Track" }
     form(method = post, action = "/tracks") {
         label {
             +"Title"
@@ -56,24 +66,20 @@ private fun BODY.trackForm() {
     }
 }
 
-class ResponseSwitch() : Gui {
-    var responseBody: Any? = null
+class TrackCreatedObserver(private val response: Response) : Gui {
 
     override fun validationFailed(message: String) {
-        responseBody = createHTML().html {
+        val responseBody = createHTML().html {
             body {
-                h1 { +"Failed to create track: $message"}
+                h1 { +"Failed to add track: $message"}
                 trackForm()
             }
         }
+        response.status(400)
+        response.body(responseBody)
     }
 
     override fun trackCreated(id: Long) {
-        responseBody = createHTML().html {
-            body {
-                h1 { +"Created Track! $id"}
-                trackForm()
-            }
-        }
+        response.redirect("/tracks")
     }
 }

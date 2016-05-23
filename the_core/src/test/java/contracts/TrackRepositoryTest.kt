@@ -1,6 +1,6 @@
 package contracts
 
-import org.assertj.core.api.KotlinAssertions
+import org.assertj.core.api.KotlinAssertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import usecases.Track
@@ -8,7 +8,7 @@ import usecases.TrackRepository
 
 abstract class TrackRepositoryTest {
 
-    var trackRepository = getRepository()
+    lateinit var trackRepository: TrackRepository
     val sinking = Track("Sinking")
     val turnToSalt = Track("Turn to Salt")
 
@@ -23,15 +23,27 @@ abstract class TrackRepositoryTest {
 
     @Test
     fun finds_by_title() {
-        KotlinAssertions.assertThat(trackRepository.findByTitle("Turn to Salt")!!.title).isEqualTo("Turn to Salt")
-        KotlinAssertions.assertThat(trackRepository.findByTitle("Sinking")!!.title).isEqualTo("Sinking")
+        assertThat(trackRepository.findByTitle("Turn to Salt")!!.title).isEqualTo("Turn to Salt")
+        assertThat(trackRepository.findByTitle("Sinking")!!.title).isEqualTo("Sinking")
     }
 
     @Test
     fun creates_unique_ids() {
-        KotlinAssertions.assertThat(sinking.id).isNotNull()
-        KotlinAssertions.assertThat(turnToSalt.id).isNotNull()
+        assertThat(sinking.id).isNotNull()
+        assertThat(turnToSalt.id).isNotNull()
 
-        KotlinAssertions.assertThat(sinking.id).isNotEqualTo(turnToSalt.id)
+        assertThat(sinking.id).isNotEqualTo(turnToSalt.id)
+    }
+
+    @Test
+    fun finds_all() {
+        trackRepository = getRepository()
+        assertThat(trackRepository.all()).asList().hasSize(0)
+
+        trackRepository.save(Track("First Track"))
+        assertThat(trackRepository.all()).asList().hasSize(1)
+
+        trackRepository.save(Track("Second Track"))
+        assertThat(trackRepository.all()).asList().hasSize(2)
     }
 }
