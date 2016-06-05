@@ -1,10 +1,10 @@
-import kotlinx.html.*
-import kotlinx.html.FormMethod.post
-import kotlinx.html.stream.createHTML
 import spark.Response
 import spark.Spark
 import spark.Spark.get
 import spark.Spark.post
+import templates.index
+import templates.new
+import templates.trackCreationFailure
 import usecases.Gui
 import usecases.InMemoryTrackRepository
 import usecases.Track
@@ -13,28 +13,19 @@ import usecases.create_track
 object Router {
 
     val trackRepository = InMemoryTrackRepository()
+    val portOverride: String? = System.getenv("PORT")
 
     @JvmStatic fun main(args: Array<String>) {
-        val portOverride: String? = System.getenv("PORT")
         if (portOverride != null) {
             Spark.port(portOverride.toInt())
         }
 
         get("/tracks") { request, response ->
-            createHTML().html {
-                body {
-                    trackForm()
-                    tracksList(trackRepository.all())
-                }
-            }
+            index(trackRepository.all())
         }
 
         get("/tracks/new") { request, response ->
-            createHTML().html {
-                body {
-                    trackForm()
-                }
-            }
+            new()
         }
 
         post("/tracks") { request, response ->
@@ -45,38 +36,11 @@ object Router {
     }
 }
 
-private fun BODY.tracksList(tracks: Collection<Track>) {
-    ul {
-        tracks.forEach { track ->
-            li {
-                +track.title
-            }
-        }
-    }
-}
-
-private fun BODY.trackForm() {
-    h1 { +"Add Track" }
-    form(method = post, action = "/tracks") {
-        label {
-            +"Title"
-            input(type = InputType.text, name = "title")
-        }
-        submitInput(name = "create")
-    }
-}
-
 class TrackCreatedObserver(private val response: Response) : Gui {
 
     override fun validationFailed(message: String) {
-        val responseBody = createHTML().html {
-            body {
-                h1 { +"Failed to add track: $message"}
-                trackForm()
-            }
-        }
         response.status(400)
-        response.body(responseBody)
+        response.body(trackCreationFailure(message))
     }
 
     override fun trackCreated(id: Long) {
