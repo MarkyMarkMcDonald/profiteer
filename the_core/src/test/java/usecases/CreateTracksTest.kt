@@ -6,12 +6,12 @@ import org.junit.Before
 
 class ImportTracksTest {
 
-    lateinit var guiSpy: GuiSpy
+    lateinit var guiSpy: SplitsGuiSpy
     lateinit var fakeTrackRepository: TrackRepository
 
     @Before
     fun setUp() {
-        guiSpy = GuiSpy()
+        guiSpy = SplitsGuiSpy()
         fakeTrackRepository = InMemoryTrackRepository()
     }
 
@@ -38,7 +38,7 @@ class ImportTracksTest {
     }
 }
 
-class GuiSpy : Gui {
+class SplitsGuiSpy : SplitsGui {
     var createdTrackId: Long? = null
 
     val validationFailedCalls: MutableList<String> = mutableListOf()

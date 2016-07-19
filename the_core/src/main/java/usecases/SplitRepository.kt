@@ -1,0 +1,5 @@
+package usecases
+
+interface SplitRepository {
+
+}
